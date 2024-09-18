@@ -1,0 +1,129 @@
+###############################################################################################
+#  0xTheProDev/setup-js : A Shareable GitHub Workflow Action to prepare JavaScript workspace  #
+#  Copyright (C) 2024 Progyan Bhattacharya <bprogyan@gmail.com>                               #
+#                                                                                             #
+#  This program is free software; you can redistribute it and/or modify                       #
+#  it under the terms of the GNU General Public License as published by                       #
+#  the Free Software Foundation; either version 2 of the License, or                          #
+#  (at your option) any later version.                                                        #
+#                                                                                             #
+#  This program is distributed in the hope that it will be useful,                            #
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of                             #
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                              #
+#  GNU General Public License for more details.                                               #
+#                                                                                             #
+#  You should have received a copy of the GNU General Public License along                    #
+#  with this program; if not, write to the Free Software Foundation, Inc.,                    #
+#  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.                                #
+###############################################################################################
+
+---
+name: "Setup JavaScript Workspace"
+description: "Setup Workspace with appropriate Runtime and Package Manager for JavaScript Projects."
+author: "Progyan Bhattacharya <bprogyan@gmail.com>"
+
+inputs:
+  always-auth:
+    description: "Set always-auth in npmrc."
+    default: "false"
+  runtime:
+    description: "JavaScript Runtime to to use. Example: bun, node."
+    default: "node"
+  version:
+    description: "Version Spec of the version to use. Examples: 12.x, 10.15.1, >=10.15.0. Default: latest."
+  version-file:
+    description: "File containing the version Spec of the version to use. Examples: package.json, .nvmrc, .node-version, .bun-version, .tool-versions."
+  architecture:
+    description: "Target architecture for Node to use. Examples: x86, x64. Will use system architecture by default."
+  check-latest:
+    description: "Set this option if you want the action to check for the latest available version that satisfies the version spec."
+    default: "false"
+  registry-url:
+    description: "Optional registry to set up for auth. Will set the registry in a project level .npmrc and .yarnrc file, and set up auth to read in from env.NODE_AUTH_TOKEN."
+  scope:
+    description: "Optional scope for authenticating against scoped registries. Will fall back to the repository owner when using the GitHub Packages registry (https://npm.pkg.github.com/)."
+  token:
+    description: Used to pull node distributions from node-versions. Since there's a default, this is typically not supplied by the user. When running this action on github.com, the default value is sufficient. When running on GHES, you can pass a personal access token for github.com if you are experiencing rate limiting.
+    default: ${{ github.server_url == 'https://github.com' && github.token || '' }}
+  cache:
+    description: "Used to specify a package manager for caching in the default directory. Supported values: npm, yarn, pnpm, bun."
+  cache-dependency-path:
+    description: "Used to specify the path to a dependency file: package-lock.json, yarn.lock, bun.lockb etc. Supports wildcards or a list of file names for caching multiple dependencies."
+  cache-path:
+    description: "Used to specify the path to global dependency cache."
+  cache-version:
+    description: "Version Spec of the package manager version to use. Examples: 1.x, 4.15.1."
+  cache-version-file:
+    description: "File containing the package manager version Spec of the version to use. Examples: package.json, .yarn-version, .bun-version, .tool-versions."
+
+runs:
+  using: "composite"
+  steps:
+    - if: ${{ inputs.runtime == 'node' }}
+      name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        always-auth: ${{ inputs.always-auth }}
+        node-version: ${{ inputs.version }}
+        node-version-file: ${{ inputs.version-file }}
+        architecture: ${{ inputs.architecture }}
+        check-latest: ${{ inputs.check-latest }}
+        registry-url: ${{ inputs.registry-url }}
+        scope: ${{ inputs.scope }}
+        token: ${{ inputs.token }}
+        cache: ${{ inputs.cache != 'bun' && inputs.cache || null }}
+        cache-dependency-path: ${{ inputs.cache != 'bun' && inputs.cache-dependency-path || null }}
+
+    - if: ${{ inputs.runtime == 'bun' || inputs.cache == 'bun' }}
+      name: Install Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: ${{ inputs.runtime == 'bun' && inputs.version || inputs.cache-version }}
+        bun-version-file: ${{ inputs.runtime == 'bun' && inputs.version-file || inputs.cache-version-file }}
+        registry-url: ${{ inputs.registry-url }}
+        scope: ${{ inputs.scope }}
+        no-cache: ${{ inputs.check-latest }}
+
+    - if: ${{ inputs.runtime == 'bun' || inputs.cache == 'bun' }}
+      name: Load Dependency Cache (Bun)
+      uses: actions/cache@v4
+      with:
+        path: ${{ inputs.cache-path || '~/.bun/install/cache' }}
+        key: ${{ runner.os }}-bun-${{ hashFiles(inputs.cache-dependency-path || '**/bun.lockb') }}
+        restore-keys: |
+          ${{ runner.os }}-bun-
+
+    - if: ${{ inputs.runtime == 'bun' || inputs.cache == 'bun' }}
+      name: Install Dependencies (Bun)
+      shell: bash
+      run: |
+        bun install --frozen-lockfile
+
+    - if: ${{ inputs.cache == 'pnpm' }}
+      name: Install Dependencies (Pnpm)
+      shell: bash
+      run: |
+        pnpm install --frozen-lockfile
+
+    - if: ${{ inputs.cache == 'npm' }}
+      name: Install Dependencies (Npm)
+      shell: bash
+      run: |
+        npm ci
+
+    - if: ${{ inputs.cache == 'yarn' }}
+      name: Install Dependencies (Yarn)
+      shell: bash
+      run: |
+        yarn install --frozen-lockfile
+
+    - if: ${{ inputs.registry-url != null }}
+      name: Setup Publish Token
+      shell: bash
+      run: |
+        rm -f $GITHUB_WORKSPACE/.npmrc
+        cp $NPM_CONFIG_USERCONFIG $GITHUB_WORKSPACE/.npmrc
+
+branding:
+  icon: "settings"
+  color: "blue"
