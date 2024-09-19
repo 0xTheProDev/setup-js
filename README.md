@@ -1,6 +1,6 @@
 <!-- markdownlint-configure-file { "MD033": false } -->
 
-# setup-js
+# action/setup-js
 
 [![License](https://img.shields.io/github/license/0xTheProDev/setup-js?style=for-the-badge&label=license)](https://github.com/0xTheProDev/setup-js/blob/main/LICENSE)
 [![Open Issues](https://img.shields.io/github/issues-raw/0xTheProDev/setup-js?style=for-the-badge)](https://github.com/0xTheProDev/setup-js/issues)
@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Workspace
-        uses: 0xTheProDev/setup-js@v1
+        uses: 0xTheProDev/setup-js@v1.2
 ```
 
 - **Setup Specific Node Version (v22.x):**
@@ -71,7 +71,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Workspace
-        uses: 0xTheProDev/setup-js@v1
+        uses: 0xTheProDev/setup-js@v1.2
         with:
           version: 22.x
 ```
@@ -102,7 +102,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Workspace
-        uses: 0xTheProDev/setup-js@v1
+        uses: 0xTheProDev/setup-js@v1.2
         with:
           version-file: .nvmrc
 ```
@@ -133,7 +133,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Workspace
-        uses: 0xTheProDev/setup-js@v1
+        uses: 0xTheProDev/setup-js@v1.2
         with:
           cache: yarn
 ```
@@ -164,7 +164,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Workspace
-        uses: 0xTheProDev/setup-js@v1
+        uses: 0xTheProDev/setup-js@v1.2
         with:
           cache: pnpm
 ```
@@ -195,7 +195,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Workspace
-        uses: 0xTheProDev/setup-js@v1
+        uses: 0xTheProDev/setup-js@v1.2
         with:
           cache: bun
 ```
@@ -226,7 +226,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Workspace
-        uses: 0xTheProDev/setup-js@v1
+        uses: 0xTheProDev/setup-js@v1.2
         with:
           cache: bun
           cache-version: 1.x
@@ -258,7 +258,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Workspace
-        uses: 0xTheProDev/setup-js@v1
+        uses: 0xTheProDev/setup-js@v1.2
         with:
           cache: bun
           cache-version-file: .bun-version
@@ -290,7 +290,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Workspace
-        uses: 0xTheProDev/setup-js@v1
+        uses: 0xTheProDev/setup-js@v1.2
         with:
           runtime: bun
 ```
@@ -321,7 +321,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Workspace
-        uses: 0xTheProDev/setup-js@v1
+        uses: 0xTheProDev/setup-js@v1.2
         with:
           runtime: bun
           version: 1.x
@@ -353,7 +353,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Workspace
-        uses: 0xTheProDev/setup-js@v1
+        uses: 0xTheProDev/setup-js@v1.2
         with:
           runtime: bun
           version-file: .bun-version
