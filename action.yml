@@ -59,8 +59,18 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - if: ${{ inputs.cache == 'pnpm' }}
+      name: Install Pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: ${{ inputs.cache-version }}
+        run_install: |
+          - recursive: true
+            args: [--frozen-lockfile, --strict-peer-dependencies]
+        package_json_file: ${{ inputs.cache-version-file }}
+
     - if: ${{ inputs.runtime == 'node' }}
-      name: Setup Node.js
+      name: Install Node.js
       uses: actions/setup-node@v4
       with:
         always-auth: ${{ inputs.always-auth }}
@@ -103,7 +113,7 @@ runs:
       name: Install Dependencies (Pnpm)
       shell: bash
       run: |
-        pnpm install --frozen-lockfile
+        pnpm install
 
     - if: ${{ inputs.cache == 'npm' }}
       name: Install Dependencies (Npm)
@@ -115,7 +125,13 @@ runs:
       name: Install Dependencies (Yarn)
       shell: bash
       run: |
-        yarn install --frozen-lockfile
+        IFS='.' read -ra VER <<< $(yarn -v)
+        if [ "${VER[0]}" = "1" ]
+        then
+          yarn install --frozen-lockfile
+        else
+          yarn install --immutable
+        fi
 
     - if: ${{ inputs.registry-url != null }}
       name: Setup Publish Token
@@ -125,5 +141,5 @@ runs:
         cp $NPM_CONFIG_USERCONFIG $GITHUB_WORKSPACE/.npmrc
 
 branding:
-  icon: "settings"
+  icon: "package"
   color: "blue"

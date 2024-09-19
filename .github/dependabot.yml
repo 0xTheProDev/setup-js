@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - commit-message:
+      prefix: chore(dep)
+    directory: "/"
+    package-ecosystem: "github-actions"
+    reviewers:
+      - 0xTheProDev
+    schedule:
+      interval: "daily"
