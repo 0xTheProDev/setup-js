@@ -71,7 +71,7 @@ runs:
 
     - if: ${{ inputs.runtime == 'node' }}
       name: Install Node.js
-      uses: actions/setup-node@v5
+      uses: actions/setup-node@v6
       with:
         always-auth: ${{ inputs.always-auth }}
         node-version: ${{ inputs.version }}
