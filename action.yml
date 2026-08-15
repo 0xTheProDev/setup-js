@@ -61,7 +61,7 @@ runs:
   steps:
     - if: ${{ inputs.cache == 'pnpm' }}
       name: Install Pnpm
-      uses: pnpm/action-setup@v4
+      uses: pnpm/action-setup@v6
       with:
         version: ${{ inputs.cache-version }}
         dest: ~/setup-pnpm
@@ -71,7 +71,7 @@ runs:
 
     - if: ${{ inputs.runtime == 'node' }}
       name: Install Node.js
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v7
       with:
         always-auth: ${{ inputs.always-auth }}
         node-version: ${{ inputs.version }}
