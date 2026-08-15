@@ -2,6 +2,10 @@
 
 # Changelog
 
+## v1.4
+
+Upgrade Node Setup, Pnpm Setup and Cache Action.
+
 ## v1.3
 
 ### What's New
