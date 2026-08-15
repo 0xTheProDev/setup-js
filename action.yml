@@ -61,7 +61,7 @@ runs:
   steps:
     - if: ${{ inputs.cache == 'pnpm' }}
       name: Install Pnpm
-      uses: pnpm/action-setup@v4
+      uses: pnpm/action-setup@v6
       with:
         version: ${{ inputs.cache-version }}
         dest: ~/setup-pnpm
